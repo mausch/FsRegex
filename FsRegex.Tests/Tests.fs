@@ -26,7 +26,7 @@ let extEscape s =
     r.Replace("-", "\\-")
 let oneOfChars (l: char seq) = sprintf "[%s]" (l |> Seq.map string |> Seq.map extEscape |> sjoin)
 let noneOfChars (l: char seq) = sprintf "[^%s]" (l |> Seq.map string |> Seq.map extEscape |> sjoin)
-let oneOf (l: string seq) = sprintf "(%s)" (l |> Seq.map literal |> join "|") // should I assume literal ?
+let oneOf (l: string seq) = sprintf "(%s)" (l |> join "|") // does NOT assume literal elements!
 let extEscapeC = string >> extEscape
 let charRange startChar endChar = sprintf "[%s-%s]" (extEscapeC startChar) (extEscapeC endChar)
 let chars startChar endChar = sprintf "%s-%s" (extEscapeC startChar) (extEscapeC endChar)
@@ -69,3 +69,15 @@ let emailTest() =
     let domain = oneOrMore (range alphaNumSigns) + literal "." + (range (chars 'A' 'Z') |> timesRange 2 4)
     let rx = wordBoundary + local + "@" + domain + wordBoundary
     Assert.Equal("\\b[A-Z0-9.-_%+]+@[A-Z0-9.-]+\\.[A-Z]{2,4}\\b", rx) // from http://www.regular-expressions.info/email.html
+
+[<Fact>]
+let ipTest() =
+    let p25x = "25" + charRange '0' '5'
+    let digit = charRange '0' '9'
+    let p2xx = "2" + charRange '0' '4' + digit
+    let pLessThan200 = zeroOrOne (oneOfChars ['0'; '1']) + digit + zeroOrOne digit
+    let element = oneOf [p25x; p2xx; pLessThan200]
+    let dot = literal "."
+    let rx = wordBoundary + (Seq.init 4 (fun _ -> element) |> join dot) + wordBoundary
+    // from http://www.regular-expressions.info/examples.html
+    Assert.Equal("\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b", rx)
