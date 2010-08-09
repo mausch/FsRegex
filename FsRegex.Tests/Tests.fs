@@ -55,7 +55,11 @@ let notRangeTest() =
 
 [<Fact>]
 let dateTest() =
-    let rx = (digit |> timesRange 1 2) + "/" + (digit |> timesRange 1 2) + "/" + (digit |> times 4)
+    let day = digit |> timesRange 1 2
+    let month = day
+    let year = digit |> times 4
+    let separator = "/"
+    let rx = month + separator + day + separator + year
     Assert.Equal("\\d{1,2}/\\d{1,2}/\\d{4}", rx)
 
 [<Fact>]
