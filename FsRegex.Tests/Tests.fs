@@ -78,6 +78,6 @@ let ipTest() =
     let pLessThan200 = zeroOrOne (oneOfChars ['0'; '1']) + digit + zeroOrOne digit
     let element = oneOf [p25x; p2xx; pLessThan200]
     let dot = literal "."
-    let rx = wordBoundary + (Seq.init 4 (fun _ -> element) |> join dot) + wordBoundary
+    let rx = wordBoundary + (Array.create 4 element |> join dot) + wordBoundary
     // from http://www.regular-expressions.info/examples.html
     Assert.Equal("\\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b", rx)
