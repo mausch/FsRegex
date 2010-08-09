@@ -23,10 +23,10 @@ let literal = Regex.Escape
 let extEscape s =
     let r = Regex.Escape s
     r.Replace("-", "\\-")
-let oneOfChars (l: char seq) = sprintf "[%s]" (l |> Seq.map string |> Seq.map extEscape |> sjoin)
-let noneOfChars (l: char seq) = sprintf "[^%s]" (l |> Seq.map string |> Seq.map extEscape |> sjoin)
-let oneOf (l: string seq) = sprintf "(%s)" (l |> join "|") // does NOT assume literal elements!
 let extEscapeC = string >> extEscape
+let oneOfChars (l: char seq) = sprintf "[%s]" (l |> Seq.map extEscapeC |> sjoin)
+let noneOfChars (l: char seq) = sprintf "[^%s]" (l |> Seq.map extEscapeC |> sjoin)
+let oneOf (l: string seq) = sprintf "(%s)" (l |> join "|") // does NOT assume literal elements!
 let charRange (startChar: char) (endChar: char) = sprintf "[%s-%s]" (extEscapeC startChar) (extEscapeC endChar)
 let chars (startChar: char) (endChar: char) = sprintf "%s-%s" (extEscapeC startChar) (extEscapeC endChar)
 let range s = sprintf "[%s]" s
